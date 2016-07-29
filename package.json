@@ -1,0 +1,23 @@
+{
+  "name": "bedel-monitor",
+  "version": "0.0.1",
+  "private": true,
+  "description": "The nodejs system monitor you've looking for",
+  "main": "monitor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "monitor",
+    "docker",
+    "system",
+    "host"
+  ],
+  "author": "Thiago Martins <rogue.thiago@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "diskusage": "^0.1.5",
+    "docker-remote-api": "^4.4.1",
+    "os-utils": "0.0.14"
+  }
+}
