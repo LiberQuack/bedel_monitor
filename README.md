@@ -1,12 +1,14 @@
 # BEDEL-MONITOR
 
-Everyone needs a monitor, even docker
+Everyone needs a monitor
  
-## Usage
 
-This image is intended to be used with fluentd, so you can retrieve
+This project is intended to be used with fluentd, so you can retrieve
 metrics from host/docker. Then you can do whatever you want, I suggest 
-storing the metrics on ElasticSearch
+storing the metrics on ElasticSearch because you will be able to visualize
+them with kibana
+
+## Usage
 
 Simply run this command on your docker host
 
@@ -14,7 +16,7 @@ Simply run this command on your docker host
     docker run \
      --name log_bedel \
      -v /var/run/docker.sock:/var/run/docker.sock \
-     -e INTERVAL_SECONDS=1 \
+     -e INTERVAL_SECONDS=60 \
      martinsthiago/bedel_monitor
 ```
 
@@ -61,8 +63,7 @@ If you run `docker logs log_bedel` you should be able to see the following outpu
     }
 ```
 
-Why JSON? If you have a log collector server it will be
-easy to parse metrics, it's JSON ;) 
+Why JSON? If you have a log collector server, it will be easy to parse metrics
 
 ## ROADMAP
 
