@@ -1,6 +1,7 @@
 'use strict';
 
 let docker = require('docker-remote-api'),
+    os = require('os'),
     converter = require('./converter');
 
 let api = docker({
@@ -37,13 +38,17 @@ function getDockerContainers() {
         api.get("/containers/json", {json: true}, function (err, info) {
             errorHandler(err, reject);
 
-            let containers = [];
+            let containers = [],
+                hostname = os.hostname();
+
             for (let container of info) {
                 containers.push({
+                    hostname: hostname,
+                    metrics_type: "docker",
                     id: container.Id,
-                    names: container.Names,
+                    name: container.Names[0],
                     image: container.Image,
-                    status: container.Status
+                    fullname: hostname + container.name,
                 });
             }
 
@@ -53,7 +58,7 @@ function getDockerContainers() {
 }
 
 function fillContainerInfo(cont) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
         api.get(`/containers/${cont.id}/stats?stream=false`, {json: true}, function (err, containerState) {
             errorHandler(err, reject);
@@ -65,28 +70,27 @@ function fillContainerInfo(cont) {
                     limit: converter.bytesToMB(memoryLimit),
                     used: converter.bytesToMB(memoryUsage),
                     swap: converter.bytesToMB(containerState.memory_stats.stats.swap),
-                    usage_percentage: Math.round(memoryUsage / memoryLimit * 100) || 0
+                    usage_percentage: Math.round(memoryUsage / memoryLimit * 100)
                 }
             };
-
             resolve(cont);
         });
     })
 }
 
 
-exports.getInfo = function () {
-    let dockerInfo = {},
-        jobs = [];
+exports.logInfo = function () {
+    let dockerVersion = {};
 
-    jobs.push(getDockerVersion().then(vrsn => dockerInfo.version = vrsn));
-
-    return getDockerContainers()
-        .then(containers => dockerInfo.containers = containers)
-        .then(_ => {
-            for (let cntnr of dockerInfo.containers) {
-                jobs.push(fillContainerInfo(cntnr));
+    getDockerVersion()
+        .then(vrsn => dockerVersion = vrsn)
+        .then(getDockerContainers)
+        .then(containers => {
+            for (let container of containers) {
+                fillContainerInfo(container)
+                    .then(contMetrics => {
+                        console.log(JSON.stringify(contMetrics));
+                    })
             }
-            return Promise.all(jobs).then(_ => dockerInfo);
         });
 };

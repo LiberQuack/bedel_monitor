@@ -1,6 +1,5 @@
 {
   "name": "bedel-monitor",
-  "version": "0.0.1",
   "private": true,
   "description": "The nodejs system monitor you've looking for",
   "main": "monitor.js",

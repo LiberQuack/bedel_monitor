@@ -1,13 +1,15 @@
 'use strict';
 
-let os = require('os-utils');
+let osUtils = require('os-utils'),
+    os = require('os');
 
-exports.getInfo = function () {
-    return new Promise(function (resolve, reject) {
-        os.cpuUsage(function (total) {
-            resolve({
-                usage_percentage: Math.round(total * 100)
-            });
-        });
+exports.logInfo = function () {
+    osUtils.cpuUsage(function (total) {
+        let metrics = {
+            hostname: os.hostname(),
+            metrics_type: "cpu",
+            usage_percentage: Math.round(total * 100)
+        };
+        console.log(JSON.stringify(metrics));
     });
 };
