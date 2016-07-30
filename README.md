@@ -72,7 +72,8 @@ Why JSON? If you have a log collector server, it will be easy to parse metrics
 
 ## RELEASES
 
-v0.0.1 Logging infos of host/disk/cpu/memory/docker 
+- v0.0.2 Improved memory monitor to retrieve data similar to htop
+- v0.0.1 Logging infos of host/disk/cpu/memory/docker 
 
 ## LICENSE
 
