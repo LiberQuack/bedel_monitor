@@ -48,7 +48,7 @@ function getDockerContainers() {
                     id: container.Id,
                     name: container.Names[0],
                     image: container.Image,
-                    fullname: hostname + container.name,
+                    fullname: hostname + container.Names[0],
                 });
             }
 
