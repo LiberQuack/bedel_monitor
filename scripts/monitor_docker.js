@@ -39,7 +39,8 @@ function getDockerContainers() {
             errorHandler(err, reject);
 
             let containers = [],
-                hostname = os.hostname();
+                hostname = os.hostname(),
+                specialChars = /[^a-z0-9_]/gi;
 
             for (let container of info) {
                 containers.push({
@@ -47,7 +48,7 @@ function getDockerContainers() {
                     metrics_type: "docker",
                     id: container.Id,
                     name: container.Names[0],
-                    fullname: `${hostname.toUpperCase()}_${container.Names[0].toString().replace("/","")}`,
+                    fullname: hostname.replace(specialChars, "_") + container.Names[0].replace(specialChars, "_"),
                     image: container.Image,
                 });
             }
@@ -60,16 +61,24 @@ function getDockerContainers() {
 function fillContainerInfo(cont) {
     return new Promise(function (resolve, reject) {
 
-        api.get(`/containers/${cont.id}/stats?stream=false`, {json: true}, function (err, containerState) {
+        api.get(`/containers/${cont.id}/stats?stream=false`, {json: true}, function (err, stats) {
             errorHandler(err, reject);
 
-            let memoryLimit = containerState.memory_stats.limit;
-            let memoryUsage = containerState.memory_stats.usage;
+            let memoryLimit = stats.memory_stats.limit;
+            let memoryUsage = stats.memory_stats.usage;
+
+            let cpuDelta = stats.cpu_stats.cpu_usage.total_usage -  stats.precpu_stats.cpu_usage.total_usage;
+            let systemDelta = stats.cpu_stats.system_cpu_usage - stats.precpu_stats.system_cpu_usage;
+            let cpuUsage = cpuDelta / systemDelta * 100;
+
             cont.stats = {
+                cpu: {
+                    usage_percentage: Math.round(cpuUsage)
+                },
                 memory: {
                     limit: converter.bytesToMB(memoryLimit),
                     used: converter.bytesToMB(memoryUsage),
-                    swap: converter.bytesToMB(containerState.memory_stats.stats.swap),
+                    swap: converter.bytesToMB(stats.memory_stats.stats.swap),
                     usage_percentage: Math.round(memoryUsage / memoryLimit * 100)
                 }
             };
