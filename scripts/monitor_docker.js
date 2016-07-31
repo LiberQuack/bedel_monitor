@@ -47,8 +47,8 @@ function getDockerContainers() {
                     metrics_type: "docker",
                     id: container.Id,
                     name: container.Names[0],
+                    fullname: `${hostname.toUpperCase()}_${container.Names[0].toString().replace("/","")}`,
                     image: container.Image,
-                    fullname: hostname + container.Names[0],
                 });
             }
 

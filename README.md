@@ -72,6 +72,7 @@ Why JSON? If you have a log collector server, it will be easy to parse metrics
 
 ## RELEASES
 
+- v0.0.5 Changed fullname separator from "/" to "_"
 - v0.0.4 Fixed container fullname
 - v0.0.3 Logging metrics by type
 - v0.0.2 Improved memory monitor to retrieve data similar to htop
