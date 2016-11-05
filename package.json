@@ -15,7 +15,6 @@
   "author": "Thiago Martins <rogue.thiago@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "diskusage": "^0.1.5",
     "docker-remote-api": "^4.4.1",
     "os-utils": "0.0.14",
     "shelljs": "^0.7.3"

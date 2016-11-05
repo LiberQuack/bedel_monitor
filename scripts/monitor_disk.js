@@ -1,23 +1,28 @@
 'use strict';
 
-let _disk = require('diskusage'),
-    os = require('os'),
-    converter = require('./converter');
+let os = require('os'),
+    shell = require('shelljs'),
+    utils = require('./utils');
 
 exports.logInfo = function () {
-    _disk.check('/', function (err, info) {
-        if (err) {
-            return console.error(err);
-        }
+    let hostname = utils.normalizeElasticText(os.hostname());
 
-        let metrics = {
-            hostname: os.hostname(),
+    let cmd = `df -TBG -x aufs -x tmpfs -x devtmpfs | sed '1d' | awk '{print $1" "$4" "$5" "$6}'`;
+    let raw = shell.exec(cmd, {silent: true}).stdout.split("\n");
+    raw.pop(); //remove last item
+
+    let disks = raw.map(resultLine => {
+        let result = resultLine.split(" ");
+        return {
             metrics_type: "disk",
-            total: converter.bytesToGB(info.total),
-            used: converter.bytesToGB(info.total - info.free),
-            free: converter.bytesToGB(info.free),
-            usage_percentage: Math.round(((info.total - info.free) / info.total) * 100)
-        };
-        console.log(JSON.stringify(metrics));
+            hostname: hostname,
+            disk: result[0],
+            total: +result[2].replace(/\D/,""),
+            used: +result[1].replace(/\D/,""),
+            usage_percentage: +(result[3]).replace(/\D/,""),
+            disk_full_name: utils.normalizeElasticText(`${hostname}${result[0]}`)
+        }
     });
+
+    disks.forEach(i => console.log(JSON.stringify(i)));
 };

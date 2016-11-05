@@ -2,7 +2,7 @@
 
 let docker = require('docker-remote-api'),
     os = require('os'),
-    converter = require('./converter');
+    utils = require('./utils');
 
 let api = docker({
     host: '/var/run/docker.sock'
@@ -39,8 +39,7 @@ function getDockerContainers() {
             errorHandler(err, reject);
 
             let containers = [],
-                hostname = os.hostname(),
-                specialChars = /[^a-z0-9_]/gi;
+                hostname = utils.normalizeElasticText(os.hostname());
 
             for (let container of info) {
                 containers.push({
@@ -48,8 +47,8 @@ function getDockerContainers() {
                     metrics_type: "docker",
                     id: container.Id,
                     name: container.Names[0],
-                    fullname: hostname.replace(specialChars, "_") + container.Names[0].replace(specialChars, "_"),
                     image: container.Image,
+                    container_full_name: utils.normalizeElasticText(`${hostname}${container.Names[0]}`),
                 });
             }
 
@@ -76,9 +75,9 @@ function fillContainerInfo(cont) {
                     usage_percentage: Math.round(cpuUsage)
                 },
                 memory: {
-                    limit: converter.bytesToMB(memoryLimit),
-                    used: converter.bytesToMB(memoryUsage),
-                    swap: converter.bytesToMB(stats.memory_stats.stats.swap),
+                    limit: utils.bytesToMB(memoryLimit),
+                    used: utils.bytesToMB(memoryUsage),
+                    swap: utils.bytesToMB(stats.memory_stats.stats.swap),
                     usage_percentage: Math.round(memoryUsage / memoryLimit * 100)
                 }
             };

@@ -1,4 +1,4 @@
-FROM node:4
+FROM node:6.9.1
 MAINTAINER 'Martins <rogue.thiago@gmail.com>'
 
 ADD scripts       /monitor/scripts
@@ -10,4 +10,4 @@ WORKDIR /monitor
 
 RUN npm install
 
-ENTRYPOINT ["./entrypoint.sh"]
+CMD ["./entrypoint.sh"]

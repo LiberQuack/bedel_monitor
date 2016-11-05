@@ -6,7 +6,11 @@ let os = require('os'),
     dockerMonitor = require('./scripts/monitor_docker'),
     memoryMonitor = require('./scripts/monitor_memory');
 
-cpuMonitor.logInfo();
-diskMonitor.logInfo();
-memoryMonitor.logInfo();
-dockerMonitor.logInfo();
+let period = (+process.argv[2] || 60) * 1000;
+
+setInterval(_ => {
+    cpuMonitor.logInfo();
+    diskMonitor.logInfo();
+    memoryMonitor.logInfo();
+    dockerMonitor.logInfo();
+}, period);
