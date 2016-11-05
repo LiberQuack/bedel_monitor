@@ -72,6 +72,8 @@ Why JSON? If you have a log collector server, it will be easy to parse metrics
 
 ## RELEASES
 
+- v0.2.1 Added auto override for time argument (short times cn harm host cpu metric)
+- v0.2.0 Added swap usage and improved disk metrics
 - v0.1.0 Added cpu usage into container metrics
 - v0.0.5 Changed fullname separator from "/" to "_"
 - v0.0.4 Fixed container fullname
