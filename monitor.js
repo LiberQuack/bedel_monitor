@@ -8,9 +8,16 @@ let os = require('os'),
 
 let period = (+process.argv[2] || 60) * 1000;
 
+if (period < 30000) {
+    console.log({msg: `WARNING: bedel monitor is auto overriding time argument from ${period / 1000}s to 30s`});
+    period = 30000;
+}
+
 setInterval(_ => {
     cpuMonitor.logInfo();
-    diskMonitor.logInfo();
-    memoryMonitor.logInfo();
-    dockerMonitor.logInfo();
+    setTimeout(_ => {
+        diskMonitor.logInfo();
+        memoryMonitor.logInfo();
+        dockerMonitor.logInfo();
+    }, 7500)
 }, period);
